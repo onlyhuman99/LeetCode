@@ -28,21 +28,23 @@ jobs:
       
       - name: Check LeetCode secrets
         env:
-          SESSION: ${{ secrets.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiMTAzNzc2MDQiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjQzYjBlM2JiMWI1OWEzMjFjMjA0YzA0YzFmMDI2ZDJjMDFiMTQzNjRiZjE0Yjc0N2E1ZGQzYzgxM2YxZTIxMTQiLCJzZXNzaW9uX3V1aWQiOiJjY2I2OWI1MSIsImlkIjoxMDM3NzYwNCwiZW1haWwiOiIyMzAwMDMyODI2QGtsdW5pdmVyc2l0eS5pbiIsInVzZXJuYW1lIjoicGFydGgyMDk5IiwidXNlcl9zbHVnIjoicGFydGgyMDk5IiwiYXZhdGFyIjoiaHR0cHM6Ly9hc3NldHMubGVldGNvZGUuY29tL3VzZXJzL3BhcnRoMjA5OS9hdmF0YXJfMTc1NDg4NDI5OC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3OTA3NDI1NDAsImlwIjoiNDUuMjQ5Ljc5LjQ1IiwiaWRlbnRpdHkiOiJjMDYwNTI4YTAzYTYzYjFiYzFiMGQxZmRmMmE4OGNmZSIsImRldmljZV93aXRoX2lwIjpbIjZiZjQ2YzAxZmI2MDBiMWFhYzIwN2YyYTljYmM5OTNmIiwiNDUuMjQ5Ljc5LjQ1Il0sIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.JYYQbVypOSWSozMHc3Uob7JeQdwbbl4QorXDnatv6jE }}
-          CSRF: ${{ secrets.xVaGPmnudM7rIqkJFe2Qn32rNlkkqUeo }}
-        
+            SESSION: ${{ secrets.LEETCODE_SESSION }}
+            CSRF: ${{ secrets.LEETCODE_CSRF_TOKEN }}
         run: |
-          if [ -z "$SESSION" ]; then
-            echo "LEETCODE_SESSION is EMPTY"
-          else
-            echo "LEETCODE_SESSION is present"
-          fi
+            echo "SESSION length: ${#SESSION}"
+            echo "CSRF length: ${#CSRF}"
 
-          if [ -z "$CSRF" ]; then
-            echo "LEETCODE_CSRF_TOKEN is EMPTY"
-          else
-            echo "LEETCODE_CSRF_TOKEN is present"
-          fi
+            if [ -z "$SESSION" ]; then
+            echo "ERROR: LEETCODE_SESSION is empty"
+            exit 1
+            fi
+
+            if [ -z "$CSRF" ]; then
+            echo "ERROR: LEETCODE_CSRF_TOKEN is empty"
+            exit 1
+            fi
+
+            echo "Both secrets are present."
 
       - name: Sync LeetCode
         env:
