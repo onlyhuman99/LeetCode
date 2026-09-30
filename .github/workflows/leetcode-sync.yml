@@ -14,12 +14,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Sync LeetCode
-        uses: joshcai/leetcode-sync@v1.7
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          github-token: ${{ github.token }}
-          leetcode-csrf-token: ${{ secrets.xVaGPmnudM7rIqkJFe2Qn32rNlkkqUeo }}
-          leetcode-session: ${{ secrets.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfYXV0aF91c2VyX2lkIjoiMTAzNzc2MDQiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaGFzaCI6IjQzYjBlM2JiMWI1OWEzMjFjMjA0YzA0YzFmMDI2ZDJjMDFiMTQzNjRiZjE0Yjc0N2E1ZGQzYzgxM2YxZTIxMTQiLCJzZXNzaW9uX3V1aWQiOiJjY2I2OWI1MSIsImlkIjoxMDM3NzYwNCwiZW1haWwiOiIyMzAwMDMyODI2QGtsdW5pdmVyc2l0eS5pbiIsInVzZXJuYW1lIjoicGFydGgyMDk5IiwidXNlcl9zbHVnIjoicGFydGgyMDk5IiwiYXZhdGFyIjoiaHR0cHM6Ly9hc3NldHMubGVldGNvZGUuY29tL3VzZXJzL3BhcnRoMjA5OS9hdmF0YXJfMTc1NDg4NDI5OC5wbmciLCJyZWZyZXNoZWRfYXQiOjE3OTA3NDI1NDAsImlwIjoiNDUuMjQ5Ljc5LjQ1IiwiaWRlbnRpdHkiOiJjMDYwNTI4YTAzYTYzYjFiYzFiMGQxZmRmMmE4OGNmZSIsImRldmljZV93aXRoX2lwIjpbIjZiZjQ2YzAxZmI2MDBiMWFhYzIwN2YyYTljYmM5OTNmIiwiNDUuMjQ5Ljc5LjQ1Il0sIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.JYYQbVypOSWSozMHc3Uob7JeQdwbbl4QorXDnatv6jE }}
-          destination-folder: solutions
-          verbose: true
-          commit-header: "[LeetCode Sync]"
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: Sync LeetCode
+        env:
+          LEETCODE_SESSION: ${{ secrets.LEETCODE_SESSION }}
+          LEETCODE_CSRF_TOKEN: ${{ secrets.LEETCODE_CSRF_TOKEN }}
+          LEETCODE_USERNAME: parth2099
+        run: |
+          python sync_leetcode.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add solutions/
+
+          if git diff --cached --quiet; then
+            echo "No new LeetCode solutions."
+          else
+            git commit -m "Sync LeetCode solutions"
+            git push
+          fi
