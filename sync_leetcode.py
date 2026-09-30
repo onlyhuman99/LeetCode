@@ -35,14 +35,42 @@ def graphql(query, variables=None):
         timeout=30,
     )
 
+    print(f"HTTP status: {response.status_code}")
+
     response.raise_for_status()
 
     data = response.json()
 
     if "errors" in data:
+        print("LeetCode GraphQL errors:")
+        print(data["errors"])
         raise RuntimeError(data["errors"])
 
     return data["data"]
+
+print("Testing LeetCode authentication...")
+
+auth_query = """
+query {
+    userStatus {
+        username
+        isSignedIn
+    }
+}
+"""
+
+auth_data = graphql(auth_query)
+
+user_status = auth_data["userStatus"]
+
+print(f"LeetCode username: {user_status['username']}")
+print(f"Signed in: {user_status['isSignedIn']}")
+
+if not user_status["isSignedIn"]:
+    raise RuntimeError(
+        "GitHub Actions is NOT authenticated to LeetCode. "
+        "Check LEETCODE_SESSION and LEETCODE_CSRF_TOKEN secrets."
+    )
 
 
 # ============================================================
